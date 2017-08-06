@@ -76,9 +76,9 @@ class Client:
         The maximum number of messages to store in the internal message cache.
         This defaults to 5000. Passing in `None` or a value less than 100
         will use the default instead of the passed in value.
-    loop : Optional[event loop]
-        The `event loop`_ to use for asynchronous operations. Defaults to ``None``,
-        in which case the default event loop is used via ``asyncio.get_event_loop()``.
+    loop : Optional[`event loop`_]
+        The `event loop`_ to use for asynchronous operations. Defaults to ``None``
+        in which case the default event loop is used via :func:`asyncio.get_event_loop()`.
     connector : aiohttp.BaseConnector
         The `connector`_ to use for connection pooling. Useful for proxies, e.g.
         with a `ProxyConnector`_.
@@ -99,7 +99,7 @@ class Client:
     Attributes
     -----------
     ws
-        The websocket gateway the client is currently connected to. Could be None.
+        The :class:`DiscordWebSocket` gateway the client is currently connected to. Could be ``None``.
     loop
         The `event loop`_ that the client uses for HTTP requests and websocket operations.
     """
@@ -164,37 +164,78 @@ class Client:
 
     @property
     def user(self):
-        """Optional[:class:`ClientUser`]: Represents the connected client. None if not logged in."""
+        """
+        Returns the connected client or ``None`` if not logged in.
+
+        Returns
+        -------
+        :class:`ClientUser` or `None`
+            The Connected client or None if not logged in
+        """
         return self._connection.user
 
     @property
     def guilds(self):
-        """List[:class:`Guild`]: The guilds that the connected client is a member of."""
+        """
+        Returns a list of guilds that the client is a member of.
+
+        Returns
+        -------
+        list
+            list of :class:`Guild`
+        """
         return self._connection.guilds
 
     @property
     def emojis(self):
-        """List[:class:`Emoji`]: The emojis that the connected client has."""
+        """
+        Returns a list of emomjis that the client has access to.
+
+        Returns
+        -------
+        list
+            list of :class:`Emoji`
+        """
         return self._connection.emojis
 
     @property
     def private_channels(self):
-        """List[:class:`abc.PrivateChannel`]: The private channels that the connected client is participating on.
+        """
+        Returns a list of the private channels that the connected client is participating on.
 
-        .. note::
-
+        Note
+        ----
             This returns only up to 128 most recent private channels due to an internal working
             on how Discord deals with private channels.
+
+        Returns
+        -------
+        list
+            list of :class:`abc.PrivateChannel`
         """
         return self._connection.private_channels
 
     @property
     def voice_clients(self):
-        """List[:class:`VoiceClient`]: Represents a list of voice connections."""
+        """
+        Returns a list of voice connections that the client is currently connected too.
+
+        Returns
+        -------
+        list
+            list of :class:`VoiceClient`
+        """
         return self._connection.voice_clients
 
     def is_ready(self):
-        """bool: Specifies if the client's internal cache is ready for use."""
+        """
+        Returns a boolean indicating whether or not the client's internal cache is ready for use.
+
+        Returns
+        -------
+        bool
+            If the internal cache is ready for use.
+        """
         return self._ready.is_set()
 
     @asyncio.coroutine
@@ -265,6 +306,7 @@ class Client:
 
         By default this prints to ``sys.stderr`` however it could be
         overridden to have a different implementation.
+
         Check :func:`discord.on_error` for more details.
         """
         print('Ignoring exception in {}'.format(event_method), file=sys.stderr)
@@ -274,10 +316,14 @@ class Client:
     def request_offline_members(self, *guilds):
         """|coro|
 
+        Note
+        ----
+            This function is usually not
+            called. It should only be used if you have the ``fetch_offline_members``
+            parameter set to ``False``.
+
         Requests previously offline members from the guild to be filled up
-        into the :attr:`Guild.members` cache. This function is usually not
-        called. It should only be used if you have the ``fetch_offline_members``
-        parameter set to ``False``.
+        into the :attr:`Guild.members` cache.
 
         When the client logs on and connects to the websocket, Discord does
         not provide the library with offline members if the number of members
@@ -286,8 +332,8 @@ class Client:
 
         Parameters
         -----------
-        \*guilds
-            An argument list of guilds to request offline members for.
+        *guilds
+            An argument list of :class:`Guild` to request offline members for.
 
         Raises
         -------
@@ -421,7 +467,7 @@ class Client:
     def close(self):
         """|coro|
 
-        Closes the connection to discord.
+        Closes the connection to Discord.
         """
         if self.is_closed():
             return
@@ -446,7 +492,7 @@ class Client:
     def start(self, *args, **kwargs):
         """|coro|
 
-        A shorthand coroutine for :meth:`login` + :meth:`connect`.
+        A shorthand coroutine for :meth:`login` and :meth:`connect` together.
         """
 
         bot = kwargs.pop('bot', True)
@@ -491,7 +537,7 @@ class Client:
             return None
 
         try:
-            return task.result() # suppress unused task warning
+            return task.result()  # suppress unused task warning
         except:
             return None
 
@@ -501,7 +547,7 @@ class Client:
 
         If you want more control over the event loop then this
         function should not be used. Use :meth:`start` coroutine
-        or :meth:`connect` + :meth:`login`.
+        or :meth:`connect` and :meth:`login`.
 
         Roughly Equivalent to: ::
 
@@ -549,33 +595,72 @@ class Client:
     # properties
 
     def is_closed(self):
-        """bool: Indicates if the websocket connection is closed."""
+        """
+        Returns a boolean indicating whether or not the client's websocket is closed.
+
+        Returns
+        -------
+        bool
+            If the websocket is closed.
+        """
         return self._closed.is_set()
 
     # helpers/getters
 
     @property
     def users(self):
-        """Returns a list of all the :class:`User` the bot can see."""
+        """
+        Returns a list of all :class:`User` that the client can see.
+
+        Returns
+        -------
+        list
+            list of :class:`User`
+        """
         return list(self._connection._users.values())
 
     def get_channel(self, id):
-        """Returns a :class:`abc.GuildChannel` or :class:`abc.PrivateChannel` with the following ID.
+        """
+        Returns a channel with ID or None if not found.
 
-        If not found, returns None.
+        Returns
+        -------
+        :class:`abc.GuildChannel` or :class:`abc.PrivateChannel` or ``None``
+            Requested Channel with Id or None
         """
         return self._connection.get_channel(id)
 
     def get_guild(self, id):
-        """Returns a :class:`Guild` with the given ID. If not found, returns None."""
+        """
+        Returns a guild with ID or None if not found.
+
+        Returns
+        -------
+        :class:`Guild` or ``None``
+            Requested Channel with Id or None
+        """
         return self._connection._get_guild(id)
 
     def get_user(self, id):
-        """Returns a :class:`User` with the given ID. If not found, returns None."""
+        """
+        Returns a user with ID or None if not found.
+
+        Returns
+        -------
+        :class:`User` or ``None``
+            Requested user with Id or None
+        """
         return self._connection.get_user(id)
 
     def get_emoji(self, id):
-        """Returns a :class:`Emoji` with the given ID. If not found, returns None."""
+        """
+        Returns an emoji with ID or None if not found.
+
+        Returns
+        -------
+        :class:`Emoji` or ``None``
+            Requested user with Id or None
+        """
         return self._connection.get_emoji(id)
 
     def get_all_channels(self):
@@ -631,10 +716,9 @@ class Client:
         or to react to a message, or to edit a message in a self-contained
         way.
 
-        The ``timeout`` parameter is passed onto `asyncio.wait_for`_. By default,
-        it does not timeout. Note that this does propagate the
-        ``asyncio.TimeoutError`` for you in case of timeout and is provided for
-        ease of use.
+        The ``timeout`` parameter is passed onto :func:`asyncio.wait_for`. By default,
+        it does not timeout. Note that this does propagate the ``asyncio.TimeoutError``\
+        for you in case of timeout and is provided for ease of use.
 
         In case the event returns multiple arguments, a tuple containing those
         arguments is returned instead. Please check the
@@ -643,7 +727,6 @@ class Client:
 
         This function returns the **first event that meets the requirements**.
 
-        .. _asyncio.wait_for: https://docs.python.org/3/library/asyncio-task.html#asyncio.wait_for
 
         Examples
         ---------
@@ -680,8 +763,8 @@ class Client:
             If a timeout is provided and it was reached.
 
         Returns
-        --------
-        Any
+        -------
+        ANY:
             Returns no arguments, a single argument, or a tuple of multiple
             arguments that mirrors the parameters passed in the
             :ref:`event reference <discord-api-events>`.
@@ -710,7 +793,10 @@ class Client:
 
         You can find more info about the events on the :ref:`documentation below <discord-api-events>`.
 
-        The events must be a |corourl|_, if not, :exc:`ClientException` is raised.
+        Raises
+        -------
+        ClientException
+            If the registered event is not a |corourl|_.
 
         Examples
         ---------
@@ -738,7 +824,7 @@ class Client:
         return coro
 
     def async_event(self, coro):
-        """A shorthand decorator for ``asyncio.coroutine`` + :meth:`event`."""
+        """A shorthand decorator for :func:`asyncio.coroutine` and :meth:`event` together."""
         if not asyncio.iscoroutinefunction(coro):
             coro = asyncio.coroutine(coro)
 
@@ -768,7 +854,7 @@ class Client:
         Raises
         ------
         InvalidArgument
-            If the ``game`` parameter is not :class:`Game` or None.
+            If the ``game`` parameter is not :class:`Game` or ``None``.
         """
 
         if status is None:
@@ -907,7 +993,7 @@ class Client:
         Returns
         --------
         :class:`AppInfo`
-            A namedtuple representing the application info.
+            A `namedtuple` representing the application info.
 
         Raises
         -------

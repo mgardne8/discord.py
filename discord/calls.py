@@ -38,9 +38,9 @@ class CallMessage:
 
     Attributes
     -----------
-    ended_timestamp: Optional[datetime.datetime]
+    ended_timestamp: Optional[:class:`datetime.datetime`]
         A naive UTC datetime object that represents the time that the call has ended.
-    participants: List[:class:`User`]
+    participants: list[:class:`User`]
         The list of users that are participating in this call.
     message: :class:`Message`
         The message associated with this call message.
@@ -53,7 +53,7 @@ class CallMessage:
 
     @property
     def call_ended(self):
-        """bool: Indicates if the call has ended."""
+        """`bool`: Indicates if the call has ended."""
         return self.ended_timestamp is not None
 
     @property
@@ -69,8 +69,8 @@ class CallMessage:
         be returned.
 
         Returns
-        ---------
-        datetime.timedelta
+        -------
+        :class:`datetime.timedelta`
             The timedelta object representing the duration.
         """
         if self.ended_timestamp is None:

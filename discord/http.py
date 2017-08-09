@@ -516,6 +516,32 @@ class HTTPClient:
     def delete_channel(self, channel_id, *, reason=None):
         return self.request(Route('DELETE', '/channels/{channel_id}', channel_id=channel_id), reason=reason)
 
+    # webhook management
+
+    def get_webhooks(self, channel_id,):
+        return self.request(Route('GET', '/channels/{channel_id}/webhooks', channel_id=channel_id))
+
+    def create_webhook(self, channel_id, name, *, avatar=None):
+        payload = {
+            'name' : name
+        }
+        if avatar is not None:
+            payload['avatar'] = avatar
+
+        return self.request(Route('POST', '/channels/{channel_id}/webhooks', channel_id=channel_id), json=payload)
+
+    def edit_webhook(self, webhook_id, name, *, avatar=None):
+        payload = {
+            'name' : name
+        }
+        if avatar is not None:
+            payload['avatar'] = avatar
+
+        return self.request(Route('PATCH', '/webhooks/{webhook_id}', webhook_id=webhook_id), json=payload)
+
+    def delete_webhook(self, webhook_id):
+        return self.request(Route('DELETE', '/webhooks/{webhook_id}', webhook_id=webhook_id))
+
     # Guild management
 
     def leave_guild(self, guild_id):

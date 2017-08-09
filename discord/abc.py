@@ -574,6 +574,101 @@ class GuildChannel:
         return Invite.from_incomplete(data=data, state=self._state)
 
     @asyncio.coroutine
+    def get_webhooks(self):
+        """|coro|
+
+        Gets a list of webhooks for the current channel
+
+        Raises
+        -------
+        HTTPException
+            Something failed!?!?.
+
+        Returns
+        --------
+        list or None
+            list of :class:`Webhook` objects
+
+        Todo
+        ----
+        Create :class:`Webhook`
+        """
+
+        data = yield from self._state.http.get_webhooks(self.id)
+        return data
+
+    @asyncio.coroutine
+    def create_webhook(self, name, *, avatar=None):
+        """|coro|
+
+        Creates a webhook in the current channel
+
+        Raises
+        -------
+        HTTPException
+            Something failed!?!?.
+
+        Returns
+        --------
+        :class:`Webhook` or `None`
+            The webhook that was created.
+
+        Todo
+        ----
+        Create :class:`Webhook`
+        """
+
+        data = yield from self._state.http.create_webhook(self.id,name=name,avatar=avatar)
+        return data
+
+    @asyncio.coroutine
+    def edit_webhook(self, webhook_id, name, *, avatar=None):
+        """|coro|
+
+        edits a webhook
+
+        Raises
+        -------
+        HTTPException
+            Something failed!?!?.
+
+        Returns
+        --------
+        :class:`Webhook` or `None`
+            The webhook that was created.
+
+        Todo
+        ----
+        Create :class:`Webhook`
+        """
+
+        data = yield from self._state.http.edit_webhook(webhook_id=webhook_id, name=name, avatar=avatar)
+        return data
+
+    @asyncio.coroutine
+    def delete_webhook(self, webhook_id):
+        """|coro|
+
+        deletes a webhook
+
+        Raises
+        -------
+        HTTPException
+            Something failed!?!?.
+
+        Returns
+        --------
+        `None`
+
+        Todo
+        ----
+        Create :class:`Webhook`
+        """
+
+        data = yield from self._state.http.delete_webhook(webhook_id=webhook_id)
+        return data
+
+    @asyncio.coroutine
     def invites(self):
         """|coro|
 

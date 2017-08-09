@@ -38,6 +38,7 @@ from .role import Role
 from .invite import Invite
 from .file import File
 from .voice_client import VoiceClient
+from .webhook import Webhook
 from . import utils, compat
 
 class _Undefined:
@@ -576,26 +577,25 @@ class GuildChannel:
     @asyncio.coroutine
     def get_webhooks(self):
         """|coro|
-
         Gets a list of webhooks for the current channel
 
         Raises
-        -------
+        ------
+        Forbidden
+            You do not have proper permissions to create a webhook here.
         HTTPException
-            Something failed!?!?.
+            An error occurred while creating the webhook.
 
         Returns
-        --------
+        -------
         list or None
-            list of :class:`Webhook` objects
-
-        Todo
-        ----
-        Create :class:`Webhook`
+            list of :class:'Webhook' for the current channel (or None)
         """
-
         data = yield from self._state.http.get_webhooks(self.id)
-        return data
+        result = []
+        for hook in data:
+            result.append(Webhook(hook))
+        return result
 
     @asyncio.coroutine
     def create_webhook(self, name, *, avatar=None):
@@ -604,69 +604,20 @@ class GuildChannel:
         Creates a webhook in the current channel
 
         Raises
-        -------
+        ------
+        Forbidden
+            You do not have proper permissions to create a webhook here.
         HTTPException
-            Something failed!?!?.
+            An error occurred while creating the webhook.
 
         Returns
-        --------
-        :class:`Webhook` or `None`
-            The webhook that was created.
-
-        Todo
-        ----
-        Create :class:`Webhook`
+        -------
+        :class:'Webhook'
         """
 
         data = yield from self._state.http.create_webhook(self.id,name=name,avatar=avatar)
-        return data
+        return Webhook(data)
 
-    @asyncio.coroutine
-    def edit_webhook(self, webhook_id, name, *, avatar=None):
-        """|coro|
-
-        edits a webhook
-
-        Raises
-        -------
-        HTTPException
-            Something failed!?!?.
-
-        Returns
-        --------
-        :class:`Webhook` or `None`
-            The webhook that was created.
-
-        Todo
-        ----
-        Create :class:`Webhook`
-        """
-
-        data = yield from self._state.http.edit_webhook(webhook_id=webhook_id, name=name, avatar=avatar)
-        return data
-
-    @asyncio.coroutine
-    def delete_webhook(self, webhook_id):
-        """|coro|
-
-        deletes a webhook
-
-        Raises
-        -------
-        HTTPException
-            Something failed!?!?.
-
-        Returns
-        --------
-        `None`
-
-        Todo
-        ----
-        Create :class:`Webhook`
-        """
-
-        data = yield from self._state.http.delete_webhook(webhook_id=webhook_id)
-        return data
 
     @asyncio.coroutine
     def invites(self):

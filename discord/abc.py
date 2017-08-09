@@ -649,7 +649,7 @@ class GuildChannel:
             invite['guild'] = self.guild
             result.append(Invite(state=state, data=invite))
 
-        return result
+        return result or None
 
 class Messageable(metaclass=abc.ABCMeta):
     """An ABC that details the common operations on a model that can send messages.

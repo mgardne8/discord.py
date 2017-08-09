@@ -26,6 +26,8 @@ DEALINGS IN THE SOFTWARE.
 
 from .object import Object
 
+import asyncio
+
 class Webhook(Object):
     """Represents a webhook.
 
